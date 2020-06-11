@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -25,6 +26,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -155,9 +158,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         if(latLng!=null){
+            LatLng center = new LatLng(mLocation.getLatitude(),mLocation.getLongitude());
+             //latLng = new LatLng(30.5978, 32.2696);
 
-            mMap.addMarker(new MarkerOptions().position(latLng).title("Marker in Home"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,14F));
+            mMap.addMarker(new MarkerOptions().position(center).title("Marker in Home"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,13));
+            mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+            // .setSn("person is reading");
+            CameraPosition cp = CameraPosition.builder()
+                   .target(center)
+                    .zoom(13)
+                    .bearing(90)
+                    .build();
+           mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cp),2000,null);
+             mMap.addCircle(new CircleOptions()
+                     .center(center)
+                    .radius(500)
+                 .strokeColor(Color.RED)
+                .fillColor(Color.BLUE));
         }
     }
 
@@ -173,10 +191,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startLocationUpdates();
         mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if(mLocation == null){
-            startLocationUpdates();
+            Toast.makeText(this,"Location not Detected", Toast.LENGTH_SHORT).show();
         }
         else {
-            Toast.makeText(this,"Location not Detected", Toast.LENGTH_SHORT).show();
+
+            startLocationUpdates();
         }
     }
 
@@ -224,7 +243,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 location.getLatitude()
         );
 
-        FirebaseDatabase.getInstance().getReference("Home Location")
+        FirebaseDatabase.getInstance().getReference("user_one").child("Home")
                 .setValue(helper).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

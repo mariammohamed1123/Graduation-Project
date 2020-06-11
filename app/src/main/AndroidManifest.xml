@@ -31,7 +31,7 @@
 
         <activity
             android:name=".RetrieveMapActivity"
-            android:label="@string/title_activity_retrieve_map"></activity>
+            android:label="@string/title_activity_retrieve_map" />
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
